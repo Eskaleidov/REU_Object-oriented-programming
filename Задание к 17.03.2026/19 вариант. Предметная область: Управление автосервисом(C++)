@@ -1,0 +1,102 @@
+#include <iostream>          // Подключаем библиотеку для ввода-вывода
+#include <string>            // Подключаем библиотеку для работы со строками
+using namespace std;         // Используем стандартное пространство имён
+
+// Класс, моделирующий заказ в автосервисе
+class ServiceOrder {
+private:
+    int orderNumber;         // Номер заказа
+    string carBrand;         // Марка автомобиля
+    string workDescription;  // Описание работ
+    double cost;             // Текущая стоимость заказа
+
+public:
+    // Конструктор с параметрами
+    ServiceOrder(int number,
+                 const string &brand,
+                 const string &description,
+                 double startCost) {
+        orderNumber = number;              // Сохраняем номер заказа
+        carBrand = brand;                  // Сохраняем марку автомобиля
+        workDescription = description;     // Сохраняем описание работ
+
+        // Проверяем начальную стоимость
+        if (startCost >= 0) {
+            cost = startCost;              // Если неотрицательная, сохраняем
+        } else {
+            cost = 0;                      // Иначе устанавливаем 0
+            cout << "Начальная стоимость не может быть отрицательной. "
+                 << "Установлено значение 0." << endl;
+        }
+    }
+
+    // Конструктор по умолчанию
+    ServiceOrder() {
+        orderNumber = 0;                          // Номер по умолчанию
+        carBrand = "Не указано";                  // Марка по умолчанию
+        workDescription = "Нет описания";         // Описание по умолчанию
+        cost = 0;                                 // Стоимость по умолчанию
+    }
+
+    // Деструктор
+    ~ServiceOrder() {
+        // Выводим сообщение при уничтожении объекта (для демонстрации)
+        cout << "Заказ №" << orderNumber << " закрыт." << endl;
+    }
+
+    // Метод добавления работы к заказу (увеличение стоимости)
+    void addWork(const string &newWork, double workCost) {
+        if (workCost > 0) {                       // Проверяем корректность цены
+            // Дополняем текст описания новой работой
+            if (!workDescription.empty()) {
+                workDescription += "; ";          // Добавляем разделитель
+            }
+            workDescription += newWork;           // Добавляем новое описание
+
+            cost += workCost;                     // Увеличиваем общую стоимость
+        } else {
+            cout << "Стоимость работы должна быть положительной." << endl;
+        }
+    }
+
+    // Метод применения скидки постоянному клиенту в процентах
+    void applyDiscount(double percent) {
+        // Проверяем, что процент в разумных пределах
+        if (percent > 0 && percent < 100) {
+            double discountAmount = cost * (percent / 100.0); // Считаем скидку
+            cost -= discountAmount;                           // Уменьшаем стоимость
+        } else {
+            cout << "Скидка должна быть в диапазоне от 0 до 100 процентов." 
+                 << endl;
+        }
+    }
+
+    // Метод вывода информации о заказе
+    void printInfo() const {
+        cout << "------------------------------" << endl;
+        cout << "Номер заказа: " << orderNumber << endl;           // Выводим номер
+        cout << "Марка автомобиля: " << carBrand << endl;          // Выводим марку
+        cout << "Описание работ: " << workDescription << endl;     // Выводим работы
+        cout << "Текущая стоимость: " << cost << " руб." << endl;  // Выводим цену
+        cout << "------------------------------" << endl;
+    }
+};
+
+int main() {
+    // Создаём заказ с начальными данными
+    ServiceOrder order1(101, "Toyota", "Диагностика", 2000);
+
+    // Выводим информацию о заказе
+    order1.printInfo();
+
+    // Добавляем новую работу к заказу
+    order1.addWork("Замена масла", 1500);
+
+    // Применяем скидку постоянному клиенту 10%
+    order1.applyDiscount(10);
+
+    // Снова выводим информацию о заказе после изменений
+    order1.printInfo();
+
+    return 0; // Возвращаем 0, обозначая успешное завершение программы
+}
