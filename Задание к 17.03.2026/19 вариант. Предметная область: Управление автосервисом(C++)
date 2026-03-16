@@ -1,6 +1,6 @@
-#include <iostream>          // Подключаем библиотеку для ввода-вывода
-#include <string>            // Подключаем библиотеку для работы со строками
-using namespace std;         // Используем стандартное пространство имён
+#include <iostream>          // Для ввода-вывода
+#include <string>            // Для работы со строками
+using namespace std;         // Чтобы не писать std:: каждый раз
 
 // Класс, моделирующий заказ в автосервисе
 class ServiceOrder {
@@ -16,88 +16,132 @@ public:
                  const string &brand,
                  const string &description,
                  double startCost) {
-        orderNumber = number;              // Сохраняем номер заказа
-        carBrand = brand;                  // Сохраняем марку автомобиля
-        workDescription = description;     // Сохраняем описание работ
+        setOrderNumber(number);          // Устанавливаем номер
+        setCarBrand(brand);             // Устанавливаем марку
+        setWorkDescription(description);// Устанавливаем описание
+        setCost(startCost);             // Устанавливаем начальную стоимость
+    }
 
-        // Проверяем начальную стоимость
-        if (startCost >= 0) {
-            cost = startCost;              // Если неотрицательная, сохраняем
+    // ===== ГЕТТЕРЫ =====
+
+    int getOrderNumber() const {        // Получить номер заказа
+        return orderNumber;
+    }
+
+    string getCarBrand() const {        // Получить марку автомобиля
+        return carBrand;
+    }
+
+    string getWorkDescription() const { // Получить описание работ
+        return workDescription;
+    }
+
+    double getCost() const {            // Получить текущую стоимость
+        return cost;
+    }
+
+    // ===== СЕТТЕРЫ =====
+
+    void setOrderNumber(int number) {   // Установить номер заказа
+        if (number > 0) {
+            orderNumber = number;
         } else {
-            cost = 0;                      // Иначе устанавливаем 0
-            cout << "Начальная стоимость не может быть отрицательной. "
+            cout << "Номер заказа должен быть положительным. "
                  << "Установлено значение 0." << endl;
+            orderNumber = 0;
         }
     }
 
-    // Конструктор по умолчанию
-    ServiceOrder() {
-        orderNumber = 0;                          // Номер по умолчанию
-        carBrand = "Не указано";                  // Марка по умолчанию
-        workDescription = "Нет описания";         // Описание по умолчанию
-        cost = 0;                                 // Стоимость по умолчанию
+    void setCarBrand(const string &brand) { // Установить марку автомобиля
+        if (!brand.empty()) {
+            carBrand = brand;
+        } else {
+            cout << "Марка автомобиля не может быть пустой. "
+                 << "Установлено значение \"Не указано\"." << endl;
+            carBrand = "Не указано";
+        }
     }
 
-    // Деструктор
-    ~ServiceOrder() {
-        // Выводим сообщение при уничтожении объекта (для демонстрации)
-        cout << "Заказ №" << orderNumber << " закрыт." << endl;
+    void setWorkDescription(const string &description) { // Установить описание
+        if (!description.empty()) {
+            workDescription = description;
+        } else {
+            workDescription = "Нет описания";
+        }
+    }
+
+    void setCost(double newCost) {      // Установить стоимость
+        if (newCost >= 0) {
+            cost = newCost;
+        } else {
+            cout << "Стоимость не может быть отрицательной. "
+                 << "Установлено значение 0." << endl;
+            cost = 0;
+        }
     }
 
     // Метод добавления работы к заказу (увеличение стоимости)
     void addWork(const string &newWork, double workCost) {
-        if (workCost > 0) {                       // Проверяем корректность цены
-            // Дополняем текст описания новой работой
+        if (workCost > 0) {
             if (!workDescription.empty()) {
-                workDescription += "; ";          // Добавляем разделитель
+                workDescription += "; "; // Разделяем работы точкой с запятой
             }
-            workDescription += newWork;           // Добавляем новое описание
-
-            cost += workCost;                     // Увеличиваем общую стоимость
+            workDescription += newWork;  // Добавляем текст новой работы
+            cost += workCost;            // Увеличиваем общую стоимость
         } else {
             cout << "Стоимость работы должна быть положительной." << endl;
         }
     }
 
-    // Метод применения скидки постоянному клиенту в процентах
+    // Метод применения скидки в процентах
     void applyDiscount(double percent) {
-        // Проверяем, что процент в разумных пределах
         if (percent > 0 && percent < 100) {
-            double discountAmount = cost * (percent / 100.0); // Считаем скидку
-            cost -= discountAmount;                           // Уменьшаем стоимость
+            double discountAmount = cost * (percent / 100.0); // Размер скидки
+            cost -= discountAmount;                           // Новая стоимость
         } else {
-            cout << "Скидка должна быть в диапазоне от 0 до 100 процентов." 
-                 << endl;
+            cout << "Скидка должна быть в диапазоне (0; 100)." << endl;
         }
     }
 
     // Метод вывода информации о заказе
     void printInfo() const {
         cout << "------------------------------" << endl;
-        cout << "Номер заказа: " << orderNumber << endl;           // Выводим номер
-        cout << "Марка автомобиля: " << carBrand << endl;          // Выводим марку
-        cout << "Описание работ: " << workDescription << endl;     // Выводим работы
-        cout << "Текущая стоимость: " << cost << " руб." << endl;  // Выводим цену
+        cout << "Номер заказа: " << orderNumber << endl;
+        cout << "Марка автомобиля: " << carBrand << endl;
+        cout << "Описание работ: " << workDescription << endl;
+        cout << "Текущая стоимость: " << cost << " руб." << endl;
         cout << "------------------------------" << endl;
     }
 };
 
 int main() {
-    // Создаём заказ с начальными данными
-    ServiceOrder order1(101, "Toyota", "Диагностика", 2000);
+    // Создаём объект заказа через конструктор
+    ServiceOrder order(101, "Toyota", "Диагностика", 2000);
 
-    // Выводим информацию о заказе
-    order1.printInfo();
+    cout << "Исходный заказ:" << endl;
+    order.printInfo();  // Выводим начальное состояние заказа
 
-    // Добавляем новую работу к заказу
-    order1.addWork("Замена масла", 1500);
+    // Добавляем новую работу и выводим результат
+    cout << "Добавляем работу: \"Замена масла\" на 1500 руб." << endl;
+    order.addWork("Замена масла", 1500);
+    order.printInfo();
 
-    // Применяем скидку постоянному клиенту 10%
-    order1.applyDiscount(10);
+    // Применяем скидку и выводим результат
+    cout << "Применяем скидку 10%:" << endl;
+    order.applyDiscount(10);
+    order.printInfo();
 
-    // Снова выводим информацию о заказе после изменений
-    order1.printInfo();
+    // Пример работы геттеров и сеттеров с выводом
+    cout << "Меняем марку и номер заказа через сеттеры..." << endl;
+    order.setCarBrand("BMW");
+    order.setOrderNumber(202);
 
+    cout << "Проверяем через геттеры:" << endl;
+    cout << "Новый номер заказа: " << order.getOrderNumber() << endl;
+    cout << "Новая марка авто: " << order.getCarBrand() << endl;
 
-    return 0; // Возвращаем 0, обозначая успешное завершение программы
+    cout << "Итоговое состояние заказа:" << endl;
+    order.printInfo();
+
+    return 0; // Успешное завершение программы
 }
